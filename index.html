@@ -36,14 +36,9 @@
   @keyframes shine { to { background-position:200% 0; } }
   .home .sub { color:var(--sub); font-size:13px; margin-bottom:24px; max-width:340px; line-height:1.6; }
 
-  .mode-row { display:flex; gap:8px; margin-bottom:16px; width:100%; max-width:320px; }
-  .mode-btn { flex:1; padding:10px; border-radius:12px; background:var(--panel); border:1px solid var(--line); color:#8892a6; font-family:inherit; font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase; cursor:pointer; transition:all .2s; }
-  .mode-btn.active { background:linear-gradient(135deg,rgba(124,92,255,.25),rgba(124,92,255,.1)); border-color:var(--accent); color:#fff; box-shadow:0 0 16px rgba(124,92,255,.3); }
-
   .btn { display:inline-flex; align-items:center; justify-content:center; gap:10px; padding:15px 26px; border-radius:14px; border:none; font-family:inherit; font-weight:800; font-size:14px; letter-spacing:.5px; cursor:pointer; transition:transform .15s; text-decoration:none; }
   .btn:active { transform:scale(.97); }
   .btn-primary { background:linear-gradient(135deg, #7c5cff, #5b3ee0); color:#fff; box-shadow:0 0 30px rgba(124,92,255,.5); width:100%; max-width:320px; margin-bottom:12px; }
-  .btn-secondary { background:var(--panel); border:1px solid var(--line); color:#fff; width:100%; max-width:320px; }
   .btn svg { width:18px; height:18px; fill:currentColor; }
 
   .join-row { display:flex; gap:8px; width:100%; max-width:320px; margin-top:12px; }
@@ -155,7 +150,8 @@
              data-context="signin"
              data-ux_mode="popup"
              data-callback="handleGoogleCredential"
-             data-auto_prompt="false">
+             data-auto_prompt="false"
+             data-itp_support="true">
         </div>
         <div class="g_id_signin"
              data-type="standard"
