@@ -51,27 +51,12 @@
   .join-row input:focus { border-color:var(--accent); box-shadow:0 0 16px rgba(124,92,255,.4); }
   .join-row button { background:linear-gradient(135deg, #22d37a, #0e7a3d); border:none; border-radius:12px; padding:0 20px; color:#fff; font-family:inherit; font-weight:800; font-size:13px; cursor:pointer; letter-spacing:.5px; }
 
-  /* GOOGLE SIGN-IN AREA */
-  .google-area {
-    width:100%; max-width:320px;
-    display:flex; flex-direction:column; align-items:center;
-    margin-bottom:16px;
-  }
+  .google-area { width:100%; max-width:320px; display:flex; flex-direction:column; align-items:center; margin-bottom:16px; }
   .google-area #g_id_onload { display:none; }
-  .google-divider {
-    color:var(--sub); font-size:11px; letter-spacing:2px;
-    margin:16px 0 10px; display:flex; align-items:center; gap:10px;
-    width:100%; max-width:320px;
-  }
-  .google-divider::before, .google-divider::after {
-    content:""; flex:1; height:1px; background:var(--line);
-  }
+  .google-divider { color:var(--sub); font-size:11px; letter-spacing:2px; margin:16px 0 10px; display:flex; align-items:center; gap:10px; width:100%; max-width:320px; }
+  .google-divider::before, .google-divider::after { content:""; flex:1; height:1px; background:var(--line); }
 
-  /* play as guest */
-  .guest-note {
-    font-size:11px; color:var(--sub); margin-top:6px; letter-spacing:.3px;
-    max-width:320px; text-align:center; line-height:1.5;
-  }
+  .guest-note { font-size:11px; color:var(--sub); margin-top:6px; letter-spacing:.3px; max-width:320px; text-align:center; line-height:1.5; }
   .guest-note a { color:var(--accent); text-decoration:none; cursor:pointer; }
 
   .game-view { flex:1; display:flex; flex-direction:column; }
@@ -141,7 +126,6 @@
 <div id="bg"></div>
 <div class="status" id="status"></div>
 
-<!-- Google Sign-In loader -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <div class="wrap">
@@ -165,10 +149,9 @@
       <h1>TAP RACE</h1>
       <div class="sub">Live multiplayer tap battle. Sign in with Google, create a room, share the code, play.</div>
 
-      <!-- GOOGLE SIGN-IN -->
       <div class="google-area" id="googleArea">
         <div id="g_id_onload"
-             data-client_id="YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com"
+             data-client_id="138490735922-g39ppn8r8h0s2ldu88bq0mpcjqvt6atg.apps.googleusercontent.com"
              data-context="signin"
              data-ux_mode="popup"
              data-callback="handleGoogleCredential"
@@ -256,7 +239,6 @@
   const chatInput = $('chatInput');
   const chatSend = $('chatSend');
   const chatCount = $('chatCount');
-  const modeLabel = $('modeLabel');
   const userChip = $('userChip');
   const userPic = $('userPic');
   const userName = $('userName');
@@ -285,22 +267,18 @@
   function uid(p){ return (p||'p') + '_' + Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4); }
   function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-  /* ===== GOOGLE SIGN-IN ===== */
-  // This function is called by Google after successful sign-in.
+  /* ===== GOOGLE SIGN-IN CALLBACK ===== */
   window.handleGoogleCredential = function(response){
     try {
       const payload = parseJwt(response.credential);
-      // payload contains: name, email, picture, sub (google user id)
       state.me.name = (payload.name || payload.email.split('@')[0]).slice(0, 14);
       state.me.pic = payload.picture || '';
       state.me.googleId = payload.sub;
-      // persist locally
       try {
         localStorage.setItem('taprace_user', JSON.stringify({
           name: state.me.name, pic: state.me.pic, gid: state.me.googleId
         }));
       } catch(e){}
-      // update UI
       userPic.src = state.me.pic;
       userName.textContent = state.me.name;
       userChip.style.display = 'flex';
@@ -313,7 +291,6 @@
     }
   };
 
-  // decode a JWT payload (client-side, for display only)
   function parseJwt(token){
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -323,14 +300,14 @@
     return JSON.parse(json);
   }
 
-  /* ===== restore stored google user on load ===== */
+  /* ===== restore stored user ===== */
   try {
     const stored = JSON.parse(localStorage.getItem('taprace_user') || 'null');
     if (stored && stored.name){
       state.me.name = stored.name;
       state.me.pic = stored.pic || '';
       state.me.googleId = stored.gid;
-      userPic.src = state.me.pic || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="%237c5cff"/></svg>';
+      userPic.src = state.me.pic || '';
       userName.textContent = state.me.name;
       userChip.style.display = 'flex';
       googleArea.style.display = 'none';
@@ -338,18 +315,14 @@
     }
   } catch(e){}
 
-  /* ===== skip google, play as guest ===== */
+  /* ===== skip google ===== */
   $('guestSkip').onclick = () => {
     googleArea.style.display = 'none';
     guestNote.style.display = 'none';
     toast('Playing as guest', 'info');
-    // pre-fill name if not set
-    if (!state.me.name) {
-      state.me.name = 'Guest' + Math.floor(Math.random()*9000 + 1000);
-    }
+    if (!state.me.name) state.me.name = 'Guest' + Math.floor(Math.random()*9000 + 1000);
   };
 
-  /* ===== render players ===== */
   function renderPlayers(){
     playersEl.innerHTML = '';
     const list = Object.values(state.players);
@@ -400,7 +373,6 @@
     if (c) { try{ c.send(msg); }catch(e){} }
   }
 
-  /* ===== stage render (simplified tap game) ===== */
   function renderStage(){
     stage.innerHTML = '';
     const timer = document.createElement('div');
@@ -646,7 +618,6 @@
   function getStoredName(){ try { return localStorage.getItem('taprace_name') || ''; } catch(e){ return ''; } }
   function setStoredName(n){ try { localStorage.setItem('taprace_name', n); } catch(e){} }
 
-  /* ===== name screen confirm ===== */
   window.__confirmName = function(){
     const name = ($('nameInput').value || '').trim().slice(0, 14);
     if (!name){ toast('Enter a name', 'err'); return; }
@@ -659,7 +630,6 @@
   $('nameConfirm').addEventListener('click', window.__confirmName, false);
   $('nameInput').addEventListener('keydown', e => { if (e.key === 'Enter') window.__confirmName(); });
 
-  /* ===== buttons ===== */
   $('createBtn').onclick = () => {
     if (!state.me.name){ state.pendingAction = 'create'; show('name'); return; }
     createRoom();
@@ -679,7 +649,6 @@
   chatSend.onclick = sendChat;
   chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendChat(); });
 
-  /* init */
   const r = new URLSearchParams(location.search).get('r');
   if (r) $('joinInput').value = r.toUpperCase().slice(0,4);
 })();
