@@ -264,6 +264,21 @@
   function uid(p){ return (p||'p') + '_' + Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4); }
   function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
+  /* ===== PEER CONFIG — points at your Render signal server ===== */
+  const PEER_CONFIG = {
+    debug: 1,
+    secure: true,
+    host: 'taprace-signal.onrender.com',
+    port: 443,
+    path: '/',
+    config: {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' }
+      ]
+    }
+  };
+
   /* ===== GOOGLE SIGN-IN ===== */
   window.handleGoogleCredential = function(response){
     try {
@@ -273,7 +288,6 @@
       state.me.googleId = payload.sub;
       state.pendingGoogleName = googleName;
 
-      // Show the name screen, pre-filled with their Google name
       show('name');
       const input = $('nameInput');
       input.value = googleName;
@@ -294,7 +308,7 @@
     return JSON.parse(json);
   }
 
-  /* ===== restore stored user ===== */
+  /* ===== restore ===== */
   try {
     const stored = JSON.parse(localStorage.getItem('taprace_user') || 'null');
     if (stored && stored.name){
@@ -524,7 +538,8 @@
     const code = makeCode();
     state.roomCode = code;
     state.isHost = true;
-    const peer = new Peer('taprace-' + code, { debug: 1 });
+
+    const peer = new Peer('taprace-' + code, PEER_CONFIG);
     state.peer = peer;
 
     peer.on('open', id => {
@@ -572,10 +587,10 @@
     state.roomCode = code;
     state.isHost = false;
 
-    addSystem('Connecting to ' + code + '...');
+    addSystem('Looking for room ' + code + '...');
     toast('Looking for room ' + code, 'info');
 
-    const peer = new Peer(uid('c'), { debug: 1 });
+    const peer = new Peer(uid('c'), PEER_CONFIG);
     state.peer = peer;
 
     peer.on('open', id => {
@@ -600,9 +615,9 @@
       setTimeout(() => {
         if (!state.players[state.me.id]){
           toast('Room didn\'t respond — check code', 'err');
-          addSystem('No response from room. Code correct? Host still open?');
+          addSystem('No response. Host open? Code correct?');
         }
-      }, 8000);
+      }, 10000);
     });
 
     peer.on('error', err => {
@@ -621,14 +636,12 @@
   function getStoredName(){ try { return localStorage.getItem('taprace_name') || ''; } catch(e){ return ''; } }
   function setStoredName(n){ try { localStorage.setItem('taprace_name', n); } catch(e){} }
 
-  /* ===== name confirm ===== */
   window.__confirmName = function(){
     const name = ($('nameInput').value || '').trim().slice(0, 14);
     if (!name){ toast('Enter a name', 'err'); return; }
     setStoredName(name);
     state.me.name = name;
 
-    // if google signed in, persist pic + gid + name
     if (state.me.googleId){
       try {
         localStorage.setItem('taprace_user', JSON.stringify({
@@ -644,7 +657,6 @@
       guestNote.textContent = 'Signed in as ' + state.me.name;
     }
 
-    // return to home and continue pending action
     show('home');
 
     if (state.pendingAction === 'create'){
@@ -662,12 +674,10 @@
   $('nameConfirm').addEventListener('click', window.__confirmName, false);
   $('nameInput').addEventListener('keydown', e => { if (e.key === 'Enter') window.__confirmName(); });
 
-  /* ===== buttons ===== */
   $('createBtn').onclick = () => {
     if (!state.me.name){
       state.pendingAction = 'create';
       show('name');
-      // pre-fill with whatever we might have
       if (state.pendingGoogleName) $('nameInput').value = state.pendingGoogleName;
       setTimeout(() => $('nameInput').focus(), 150);
       return;
@@ -699,7 +709,6 @@
   chatSend.onclick = sendChat;
   chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendChat(); });
 
-  /* ===== URL room code auto-fill ===== */
   const r = new URLSearchParams(location.search).get('r');
   if (r) $('joinInput').value = r.toUpperCase().slice(0,4);
 })();
