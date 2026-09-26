@@ -7,391 +7,129 @@
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   :root {
-    --bg:#0a0a12;
-    --panel:#14141f;
-    --panel-2:#1c1c2a;
-    --line:#2a2a3d;
-    --accent:#7c5cff;
-    --accent-2:#ff3366;
-    --green:#22d37a;
-    --text:#fff;
-    --sub:#8892a6;
+    --bg:#0a0a12; --panel:#14141f; --panel-2:#1c1c2a; --line:#2a2a3d;
+    --accent:#7c5cff; --accent-2:#ff3366; --green:#22d37a;
+    --text:#fff; --sub:#8892a6;
   }
-  html, body {
-    background:var(--bg);
-    color:var(--text);
-    font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
-    min-height:100vh;
-    overflow-x:hidden;
-    -webkit-font-smoothing:antialiased;
-  }
-  #bg {
-    position:fixed; inset:0; z-index:-1;
-    background:
-      radial-gradient(circle at 20% 10%, rgba(124,92,255,.15), transparent 45%),
-      radial-gradient(circle at 80% 80%, rgba(255,51,102,.1), transparent 45%),
-      var(--bg);
-  }
+  html, body { background:var(--bg); color:var(--text); font-family:'Segoe UI', system-ui, -apple-system, sans-serif; min-height:100vh; overflow-x:hidden; -webkit-font-smoothing:antialiased; }
+  #bg { position:fixed; inset:0; z-index:-1; background:radial-gradient(circle at 20% 10%, rgba(124,92,255,.15), transparent 45%), radial-gradient(circle at 80% 80%, rgba(255,51,102,.1), transparent 45%), var(--bg); }
 
   .wrap { max-width:900px; margin:0 auto; padding:16px; min-height:100vh; display:flex; flex-direction:column; }
 
-  /* top bar */
-  .top {
-    display:flex; align-items:center; justify-content:space-between;
-    padding:10px 14px;
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:14px;
-    margin-bottom:14px;
-  }
+  .top { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--panel); border:1px solid var(--line); border-radius:14px; margin-bottom:14px; flex-wrap:wrap; gap:8px; }
   .logo { display:flex; align-items:center; gap:8px; font-weight:900; font-size:15px; letter-spacing:.5px; }
-  .logo .dot {
-    width:10px; height:10px; border-radius:50%;
-    background:var(--green); box-shadow:0 0 12px var(--green);
-    animation:pulse 1.4s infinite;
-  }
-  @keyframes pulse {
-    0%,100% { opacity:1; }
-    50% { opacity:.4; }
-  }
-  .room-pill {
-    display:flex; align-items:center; gap:8px;
-    padding:6px 12px; border-radius:20px;
-    background:rgba(124,92,255,.12);
-    border:1px solid rgba(124,92,255,.4);
-    font-family:ui-monospace, monospace;
-    font-size:12px; font-weight:800; letter-spacing:2px;
-    color:#c8beff;
-    cursor:pointer;
-    transition:all .2s;
-  }
+  .logo .dot { width:10px; height:10px; border-radius:50%; background:var(--green); box-shadow:0 0 12px var(--green); animation:pulse 1.4s infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.4; } }
+  .top-right { display:flex; align-items:center; gap:8px; }
+  .room-pill { display:flex; align-items:center; gap:8px; padding:6px 12px; border-radius:20px; background:rgba(124,92,255,.12); border:1px solid rgba(124,92,255,.4); font-family:ui-monospace, monospace; font-size:12px; font-weight:800; letter-spacing:2px; color:#c8beff; cursor:pointer; transition:all .2s; }
   .room-pill:hover { background:rgba(124,92,255,.2); }
   .room-pill svg { width:13px; height:13px; fill:currentColor; }
+  .user-chip { display:flex; align-items:center; gap:8px; padding:5px 12px 5px 5px; background:var(--panel-2); border:1px solid var(--line); border-radius:20px; font-size:12px; font-weight:700; }
+  .user-chip img { width:24px; height:24px; border-radius:50%; }
+  .user-chip .txt { color:#fff; }
 
-  /* views */
   .view { display:none; flex:1; flex-direction:column; }
   .view.active { display:flex; }
 
-  /* home */
-  .home {
-    flex:1;
-    display:flex; flex-direction:column;
-    align-items:center; justify-content:center;
-    text-align:center;
-    padding:30px 10px;
-  }
-  .home h1 {
-    font-size:clamp(28px, 9vw, 44px);
-    font-weight:900;
-    background:linear-gradient(90deg, #7c5cff, #ff3366, #7c5cff);
-    background-size:200% 100%;
-    -webkit-background-clip:text; background-clip:text;
-    -webkit-text-fill-color:transparent;
-    animation:shine 4s linear infinite;
-    margin-bottom:10px;
-    letter-spacing:-1px;
-  }
+  .home { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:30px 10px; }
+  .home h1 { font-size:clamp(28px, 9vw, 44px); font-weight:900; background:linear-gradient(90deg, #7c5cff, #ff3366, #7c5cff); background-size:200% 100%; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:shine 4s linear infinite; margin-bottom:10px; letter-spacing:-1px; }
   @keyframes shine { to { background-position:200% 0; } }
-  .home .sub { color:var(--sub); font-size:13px; margin-bottom:28px; max-width:340px; line-height:1.6; }
+  .home .sub { color:var(--sub); font-size:13px; margin-bottom:24px; max-width:340px; line-height:1.6; }
 
-  .btn {
-    display:inline-flex; align-items:center; justify-content:center; gap:10px;
-    padding:15px 26px;
-    border-radius:14px;
-    border:none;
-    font-family:inherit;
-    font-weight:800;
-    font-size:14px;
-    letter-spacing:.5px;
-    cursor:pointer;
-    transition:transform .15s;
-    text-decoration:none;
-  }
+  .mode-row { display:flex; gap:8px; margin-bottom:16px; width:100%; max-width:320px; }
+  .mode-btn { flex:1; padding:10px; border-radius:12px; background:var(--panel); border:1px solid var(--line); color:#8892a6; font-family:inherit; font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase; cursor:pointer; transition:all .2s; }
+  .mode-btn.active { background:linear-gradient(135deg,rgba(124,92,255,.25),rgba(124,92,255,.1)); border-color:var(--accent); color:#fff; box-shadow:0 0 16px rgba(124,92,255,.3); }
+
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:10px; padding:15px 26px; border-radius:14px; border:none; font-family:inherit; font-weight:800; font-size:14px; letter-spacing:.5px; cursor:pointer; transition:transform .15s; text-decoration:none; }
   .btn:active { transform:scale(.97); }
-  .btn-primary {
-    background:linear-gradient(135deg, #7c5cff, #5b3ee0);
-    color:#fff;
-    box-shadow:0 0 30px rgba(124,92,255,.5);
-    width:100%; max-width:320px;
-    margin-bottom:12px;
-  }
-  .btn-secondary {
-    background:var(--panel);
-    border:1px solid var(--line);
-    color:#fff;
-    width:100%; max-width:320px;
-  }
+  .btn-primary { background:linear-gradient(135deg, #7c5cff, #5b3ee0); color:#fff; box-shadow:0 0 30px rgba(124,92,255,.5); width:100%; max-width:320px; margin-bottom:12px; }
+  .btn-secondary { background:var(--panel); border:1px solid var(--line); color:#fff; width:100%; max-width:320px; }
   .btn svg { width:18px; height:18px; fill:currentColor; }
 
-  .join-row {
-    display:flex; gap:8px;
-    width:100%; max-width:320px;
-    margin-top:12px;
-  }
-  .join-row input {
-    flex:1;
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:12px;
-    padding:14px 16px;
-    color:#fff;
-    font-family:ui-monospace, monospace;
-    font-size:14px;
-    font-weight:800;
-    letter-spacing:3px;
-    text-align:center;
-    text-transform:uppercase;
-    outline:none;
-    min-width:0;
-  }
+  .join-row { display:flex; gap:8px; width:100%; max-width:320px; margin-top:12px; }
+  .join-row input { flex:1; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 16px; color:#fff; font-family:ui-monospace, monospace; font-size:14px; font-weight:800; letter-spacing:3px; text-align:center; text-transform:uppercase; outline:none; min-width:0; }
   .join-row input:focus { border-color:var(--accent); box-shadow:0 0 16px rgba(124,92,255,.4); }
-  .join-row button {
-    background:linear-gradient(135deg, #22d37a, #0e7a3d);
-    border:none;
-    border-radius:12px;
-    padding:0 20px;
-    color:#fff;
-    font-family:inherit;
-    font-weight:800;
-    font-size:13px;
-    cursor:pointer;
-    letter-spacing:.5px;
+  .join-row button { background:linear-gradient(135deg, #22d37a, #0e7a3d); border:none; border-radius:12px; padding:0 20px; color:#fff; font-family:inherit; font-weight:800; font-size:13px; cursor:pointer; letter-spacing:.5px; }
+
+  /* GOOGLE SIGN-IN AREA */
+  .google-area {
+    width:100%; max-width:320px;
+    display:flex; flex-direction:column; align-items:center;
+    margin-bottom:16px;
+  }
+  .google-area #g_id_onload { display:none; }
+  .google-divider {
+    color:var(--sub); font-size:11px; letter-spacing:2px;
+    margin:16px 0 10px; display:flex; align-items:center; gap:10px;
+    width:100%; max-width:320px;
+  }
+  .google-divider::before, .google-divider::after {
+    content:""; flex:1; height:1px; background:var(--line);
   }
 
-  /* game view */
+  /* play as guest */
+  .guest-note {
+    font-size:11px; color:var(--sub); margin-top:6px; letter-spacing:.3px;
+    max-width:320px; text-align:center; line-height:1.5;
+  }
+  .guest-note a { color:var(--accent); text-decoration:none; cursor:pointer; }
+
   .game-view { flex:1; display:flex; flex-direction:column; }
-
-  .players {
-    display:flex; gap:8px; flex-wrap:wrap;
-    padding:10px 0;
-    margin-bottom:8px;
-  }
-  .player-chip {
-    display:flex; align-items:center; gap:7px;
-    padding:6px 12px;
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:20px;
-    font-size:12px; font-weight:700;
-    transition:all .3s;
-  }
+  .players { display:flex; gap:8px; flex-wrap:wrap; padding:10px 0; margin-bottom:8px; }
+  .player-chip { display:flex; align-items:center; gap:7px; padding:6px 12px 6px 6px; background:var(--panel); border:1px solid var(--line); border-radius:20px; font-size:12px; font-weight:700; transition:all .3s; }
   .player-chip.me { border-color:var(--accent); box-shadow:0 0 14px rgba(124,92,255,.3); }
-  .player-chip .av {
-    width:18px; height:18px; border-radius:50%;
-    background:var(--accent);
-    display:flex; align-items:center; justify-content:center;
-    font-size:10px; font-weight:900; color:#fff;
-  }
+  .player-chip .av { width:22px; height:22px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:900; color:#fff; overflow:hidden; }
+  .player-chip .av img { width:100%; height:100%; object-fit:cover; }
   .player-chip .pts { color:var(--sub); font-weight:600; }
 
-  .stage {
-    flex:1;
-    display:flex; flex-direction:column;
-    align-items:center; justify-content:center;
-    padding:20px;
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:20px;
-    position:relative;
-    overflow:hidden;
-    min-height:340px;
-    text-align:center;
-  }
-  .stage::before {
-    content:"";
-    position:absolute; inset:0;
-    background:radial-gradient(circle at 50% 50%, rgba(124,92,255,.1), transparent 70%);
-    pointer-events:none;
-  }
-
-  .stage-timer {
-    font-size:56px; font-weight:900;
-    font-family:ui-monospace, monospace;
-    color:#fff;
-    letter-spacing:-2px;
-    line-height:1;
-    margin-bottom:10px;
-    text-shadow:0 0 30px rgba(124,92,255,.6);
-  }
+  .stage { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; background:var(--panel); border:1px solid var(--line); border-radius:20px; position:relative; overflow:hidden; min-height:360px; text-align:center; }
+  .stage::before { content:""; position:absolute; inset:0; background:radial-gradient(circle at 50% 50%, rgba(124,92,255,.1), transparent 70%); pointer-events:none; }
+  .stage-timer { font-size:56px; font-weight:900; font-family:ui-monospace, monospace; color:#fff; letter-spacing:-2px; line-height:1; margin-bottom:10px; text-shadow:0 0 30px rgba(124,92,255,.6); }
   .stage-timer.warn { color:#ff3366; text-shadow:0 0 30px rgba(255,51,102,.6); }
-  .stage-label {
-    font-size:13px; color:var(--sub);
-    letter-spacing:2px; text-transform:uppercase;
-    font-weight:800;
-    margin-bottom:24px;
-  }
-  .tap-btn {
-    width:180px; height:180px;
-    border-radius:50%;
-    border:3px solid var(--accent);
-    background:radial-gradient(circle at 30% 30%, #7c5cff, #4a2db8);
-    color:#fff;
-    font-family:inherit;
-    font-size:22px; font-weight:900; letter-spacing:2px;
-    cursor:pointer;
-    box-shadow:0 0 40px rgba(124,92,255,.6), inset 0 -20px 40px rgba(0,0,0,.3);
-    transition:transform .08s, box-shadow .15s;
-    user-select:none;
-    -webkit-user-select:none;
-    position:relative;
-  }
+  .stage-label { font-size:13px; color:var(--sub); letter-spacing:2px; text-transform:uppercase; font-weight:800; margin-bottom:20px; }
+
+  .tap-btn { width:180px; height:180px; border-radius:50%; border:3px solid var(--accent); background:radial-gradient(circle at 30% 30%, #7c5cff, #4a2db8); color:#fff; font-family:inherit; font-size:22px; font-weight:900; letter-spacing:2px; cursor:pointer; box-shadow:0 0 40px rgba(124,92,255,.6), inset 0 -20px 40px rgba(0,0,0,.3); transition:transform .08s, box-shadow .15s; user-select:none; -webkit-user-select:none; position:relative; }
   .tap-btn:active, .tap-btn.tap { transform:scale(.92); box-shadow:0 0 60px rgba(124,92,255,1), inset 0 -10px 30px rgba(0,0,0,.4); }
   .tap-btn:disabled { opacity:.35; cursor:not-allowed; filter:grayscale(.6); }
-  .tap-btn .count {
-    position:absolute;
-    top:50%; left:50%; transform:translate(-50%, -50%);
-    font-size:44px;
-  }
-  .tap-btn .lbl {
-    position:absolute;
-    bottom:34px; left:50%; transform:translateX(-50%);
-    font-size:11px; letter-spacing:3px;
-    opacity:.85;
-  }
+  .tap-btn .count { position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:44px; }
+  .tap-btn .lbl { position:absolute; bottom:34px; left:50%; transform:translateX(-50%); font-size:11px; letter-spacing:3px; opacity:.85; }
 
-  .winner-banner {
-    padding:14px 22px;
-    background:linear-gradient(135deg, rgba(34,211,122,.15), rgba(34,211,122,.05));
-    border:1px solid var(--green);
-    border-radius:14px;
-    font-weight:900;
-    color:var(--green);
-    letter-spacing:1px;
-    text-transform:uppercase;
-    font-size:14px;
-    margin-bottom:20px;
-    box-shadow:0 0 24px rgba(34,211,122,.3);
-  }
-
-  .stage-actions {
-    margin-top:20px;
-    display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
-  }
+  .stage-actions { margin-top:20px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
   .stage-actions .btn { padding:12px 22px; font-size:13px; width:auto; min-width:140px; }
 
-  /* chat */
-  .chat {
-    margin-top:14px;
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:14px;
-    display:flex; flex-direction:column;
-    max-height:220px;
-  }
-  .chat-head {
-    display:flex; align-items:center; justify-content:space-between;
-    padding:10px 14px;
-    border-bottom:1px solid var(--line);
-    font-size:11px; font-weight:800; letter-spacing:2px;
-    text-transform:uppercase;
-    color:var(--sub);
-  }
+  .chat { margin-top:14px; background:var(--panel); border:1px solid var(--line); border-radius:14px; display:flex; flex-direction:column; max-height:220px; }
+  .chat-head { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid var(--line); font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--sub); }
   .chat-head .count { color:var(--green); }
-  .chat-body {
-    flex:1;
-    overflow-y:auto;
-    padding:12px 14px;
-    display:flex; flex-direction:column; gap:8px;
-    scroll-behavior:smooth;
-  }
+  .chat-body { flex:1; overflow-y:auto; padding:12px 14px; display:flex; flex-direction:column; gap:8px; scroll-behavior:smooth; }
   .chat-body::-webkit-scrollbar { width:6px; }
   .chat-body::-webkit-scrollbar-thumb { background:var(--line); border-radius:3px; }
   .msg { font-size:13px; line-height:1.45; word-wrap:break-word; }
-  .msg .who {
-    font-weight:800;
-    color:var(--accent);
-    margin-right:6px;
-  }
+  .msg .who { font-weight:800; color:var(--accent); margin-right:6px; }
   .msg.me .who { color:var(--green); }
-  .msg.system {
-    color:var(--sub);
-    font-style:italic;
-    font-size:11px;
-    text-align:center;
-    letter-spacing:.3px;
-  }
-  .chat-input {
-    display:flex; gap:8px;
-    padding:10px 12px;
-    border-top:1px solid var(--line);
-  }
-  .chat-input input {
-    flex:1;
-    background:var(--panel-2);
-    border:1px solid var(--line);
-    border-radius:10px;
-    padding:10px 14px;
-    color:#fff;
-    font-family:inherit;
-    font-size:13px;
-    outline:none;
-    min-width:0;
-  }
+  .msg.system { color:var(--sub); font-style:italic; font-size:11px; text-align:center; letter-spacing:.3px; }
+  .chat-input { display:flex; gap:8px; padding:10px 12px; border-top:1px solid var(--line); }
+  .chat-input input { flex:1; background:var(--panel-2); border:1px solid var(--line); border-radius:10px; padding:10px 14px; color:#fff; font-family:inherit; font-size:13px; outline:none; min-width:0; }
   .chat-input input:focus { border-color:var(--accent); }
-  .chat-input button {
-    background:linear-gradient(135deg, var(--accent), #5b3ee0);
-    border:none;
-    border-radius:10px;
-    width:42px;
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer;
-    flex-shrink:0;
-  }
+  .chat-input button { background:linear-gradient(135deg, var(--accent), #5b3ee0); border:none; border-radius:10px; width:42px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; }
   .chat-input button svg { width:18px; height:18px; fill:#fff; }
 
-  /* status toasts */
-  .status {
-    position:fixed;
-    top:20px; left:50%;
-    transform:translateX(-50%) translateY(-100px);
-    background:var(--panel);
-    border:1px solid var(--line);
-    padding:12px 20px;
-    border-radius:12px;
-    font-size:13px;
-    font-weight:700;
-    letter-spacing:.5px;
-    z-index:1000;
-    transition:transform .4s;
-    box-shadow:0 10px 40px rgba(0,0,0,.6);
-  }
+  .status { position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-100px); background:var(--panel); border:1px solid var(--line); padding:12px 20px; border-radius:12px; font-size:13px; font-weight:700; letter-spacing:.5px; z-index:1000; transition:transform .4s; box-shadow:0 10px 40px rgba(0,0,0,.6); max-width:calc(100vw - 32px); }
   .status.show { transform:translateX(-50%) translateY(0); }
   .status.ok { border-color:var(--green); color:var(--green); }
   .status.err { border-color:var(--accent-2); color:var(--accent-2); }
   .status.info { border-color:var(--accent); color:#c8beff; }
 
-  .name-setup {
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:16px;
-    padding:24px;
-    max-width:340px;
-    margin:0 auto;
-    text-align:center;
-  }
+  .name-setup { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:24px; max-width:340px; margin:0 auto; text-align:center; }
   .name-setup h3 { font-size:16px; font-weight:800; margin-bottom:6px; }
   .name-setup p { font-size:12px; color:var(--sub); margin-bottom:18px; }
-  .name-setup input {
-    width:100%;
-    background:var(--panel-2);
-    border:1px solid var(--line);
-    border-radius:12px;
-    padding:14px 16px;
-    color:#fff;
-    font-family:inherit;
-    font-size:14px;
-    font-weight:700;
-    outline:none;
-    margin-bottom:12px;
-    text-align:center;
-  }
+  .name-setup input { width:100%; background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:14px 16px; color:#fff; font-family:inherit; font-size:14px; font-weight:700; outline:none; margin-bottom:12px; text-align:center; }
   .name-setup input:focus { border-color:var(--accent); }
   .name-setup .btn { width:100%; }
 
   @media (max-width:500px) {
     .players { padding:6px 0; }
-    .player-chip { font-size:11px; padding:5px 10px; }
-    .stage { min-height:300px; padding:16px; }
+    .player-chip { font-size:11px; padding:5px 10px 5px 5px; }
+    .stage { min-height:320px; padding:16px; }
     .stage-timer { font-size:44px; }
     .tap-btn { width:150px; height:150px; }
     .tap-btn .count { font-size:36px; }
@@ -401,80 +139,93 @@
 <body>
 
 <div id="bg"></div>
-
 <div class="status" id="status"></div>
+
+<!-- Google Sign-In loader -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <div class="wrap">
 
-  <!-- TOP -->
   <div class="top" id="topBar" style="display:none;">
-    <div class="logo"><span class="dot"></span> TAP RACE</div>
-    <div class="room-pill" id="roomPill" title="Tap to copy">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 00-2 2v14h2V3h12V1zm3 4H8a2 2 0 00-2 2v14a2 2 0 002 2h11a2 2 0 002-2V7a2 2 0 00-2-2zm0 16H8V7h11v14z"/></svg>
-      <span id="roomCode">----</span>
-    </div>
-  </div>
-
-  <!-- HOME -->
-  <div class="view active" id="view-home">
-    <div class="home">
-      <h1>TAP RACE</h1>
-      <div class="sub">Live multiplayer tap battle. Make a room, share the code, tap faster than everyone else.</div>
-
-      <button class="btn btn-primary" id="createBtn">
-        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-        Create Room
-      </button>
-
-      <div style="color:var(--sub); font-size:12px; margin:16px 0 10px; letter-spacing:2px;">— OR —</div>
-
-      <div class="join-row">
-        <input type="text" id="joinInput" maxlength="4" placeholder="CODE" autocomplete="off">
-        <button id="joinBtn">JOIN</button>
+    <div class="logo"><span class="dot"></span> <span id="modeLabel">TAP RACE</span></div>
+    <div class="top-right">
+      <div class="user-chip" id="userChip" style="display:none;">
+        <img id="userPic" src="" alt="">
+        <span class="txt" id="userName">User</span>
+      </div>
+      <div class="room-pill" id="roomPill" title="Tap to copy">
+        <svg viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 00-2 2v14h2V3h12V1zm3 4H8a2 2 0 00-2 2v14a2 2 0 002 2h11a2 2 0 002-2V7a2 2 0 00-2-2zm0 16H8V7h11v14z"/></svg>
+        <span id="roomCode">----</span>
       </div>
     </div>
   </div>
 
-  <!-- NAME SETUP -->
+  <div class="view active" id="view-home">
+    <div class="home">
+      <h1>TAP RACE</h1>
+      <div class="sub">Live multiplayer tap battle. Sign in with Google, create a room, share the code, play.</div>
+
+      <!-- GOOGLE SIGN-IN -->
+      <div class="google-area" id="googleArea">
+        <div id="g_id_onload"
+             data-client_id="YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com"
+             data-context="signin"
+             data-ux_mode="popup"
+             data-callback="handleGoogleCredential"
+             data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin"
+             data-type="standard"
+             data-shape="pill"
+             data-theme="filled_black"
+             data-text="signin_with"
+             data-size="large"
+             data-logo_alignment="left"
+             data-width="320">
+        </div>
+      </div>
+
+      <div class="guest-note" id="guestNote">
+        Google sign-in keeps your name & avatar across visits.
+        <a id="guestSkip">Skip · play as guest</a>
+      </div>
+
+      <div class="google-divider">OR</div>
+
+      <div class="join-row">
+        <input type="text" id="joinInput" maxlength="4" placeholder="CODE" autocomplete="off">
+        <button type="button" id="joinBtn">JOIN</button>
+      </div>
+
+      <button type="button" class="btn btn-primary" id="createBtn" style="margin-top:16px;">
+        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        Create Room
+      </button>
+    </div>
+  </div>
+
   <div class="view" id="view-name">
     <div class="home">
       <div class="name-setup">
         <h3>Pick a name</h3>
         <p>This is how other players see you.</p>
         <input type="text" id="nameInput" maxlength="14" placeholder="Your name" autocomplete="off">
-        <button class="btn btn-primary" id="nameConfirm">START</button>
+        <button type="button" class="btn btn-primary" id="nameConfirm"
+          onclick="window.__confirmName && window.__confirmName()">START</button>
       </div>
     </div>
   </div>
 
-  <!-- GAME -->
   <div class="view" id="view-game">
     <div class="game-view">
       <div class="players" id="players"></div>
-
-      <div class="stage" id="stage">
-        <div class="stage-timer" id="timer">15</div>
-        <div class="stage-label" id="stageLabel">TAP WHEN READY</div>
-        <button class="tap-btn" id="tapBtn" disabled>
-          <div class="count" id="tapCount">0</div>
-          <div class="lbl" id="tapLbl">TAP</div>
-        </button>
-        <div class="stage-actions" id="stageActions"></div>
-      </div>
-
+      <div class="stage" id="stage"></div>
       <div class="chat">
-        <div class="chat-head">
-          <span>Live Chat</span>
-          <span class="count" id="chatCount">0 online</span>
-        </div>
-        <div class="chat-body" id="chatBody">
-          <div class="msg system">Welcome. Be nice.</div>
-        </div>
+        <div class="chat-head"><span>Live Chat</span><span class="count" id="chatCount">0 online</span></div>
+        <div class="chat-body" id="chatBody"><div class="msg system">Welcome. Be nice.</div></div>
         <div class="chat-input">
           <input type="text" id="chatInput" placeholder="Say something..." maxlength="120" autocomplete="off">
-          <button id="chatSend" aria-label="Send">
-            <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
-          </button>
+          <button type="button" id="chatSend" aria-label="Send"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg></button>
         </div>
       </div>
     </div>
@@ -485,39 +236,33 @@
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
 (function(){
-  /* ===== STATE ===== */
   const state = {
-    me: { id:'', name:'', taps:0 },
-    players: {},           // id -> {name, taps}
-    hostId: null,          // peer id of host
-    isHost: false,
-    roomCode: '',
-    peer: null,
-    connections: {},       // for host: peerId -> conn ; for client: single conn
-    gameState: 'idle',     // idle | countdown | playing | ended
-    roundTimer: null,
-    roundTimeLeft: 15,
-    countdownTimeLeft: 3
+    me: { id:'', name:'', taps:0, pic:'' },
+    players: {},
+    hostId: null, isHost: false,
+    roomCode: '', peer: null,
+    connections: {},
+    gameState: 'idle',
+    roundTimer: null, roundTimeLeft: 15
   };
 
-  /* ===== DOM ===== */
   const $ = id => document.getElementById(id);
   const statusEl = $('status');
   const topBar = $('topBar');
   const roomCodeEl = $('roomCode');
   const playersEl = $('players');
-  const timerEl = $('timer');
-  const stageLabel = $('stageLabel');
-  const tapBtn = $('tapBtn');
-  const tapCountEl = $('tapCount');
-  const tapLbl = $('tapLbl');
-  const stageActions = $('stageActions');
+  const stage = $('stage');
   const chatBody = $('chatBody');
   const chatInput = $('chatInput');
   const chatSend = $('chatSend');
   const chatCount = $('chatCount');
+  const modeLabel = $('modeLabel');
+  const userChip = $('userChip');
+  const userPic = $('userPic');
+  const userName = $('userName');
+  const googleArea = $('googleArea');
+  const guestNote = $('guestNote');
 
-  /* ===== TOAST ===== */
   let toastT;
   function toast(msg, type){
     statusEl.textContent = msg;
@@ -526,47 +271,100 @@
     toastT = setTimeout(() => statusEl.classList.remove('show'), 2400);
   }
 
-  /* ===== VIEW SWITCH ===== */
   function show(view){
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     $('view-' + view).classList.add('active');
   }
 
-  /* ===== RANDOM CODE ===== */
   function makeCode(){
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let s = '';
     for (let i = 0; i < 4; i++) s += chars[Math.floor(Math.random()*chars.length)];
     return s;
   }
+  function uid(p){ return (p||'p') + '_' + Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4); }
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-  /* ===== RANDOM ID ===== */
-  function uid(prefix){
-    return (prefix || 'p') + '_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+  /* ===== GOOGLE SIGN-IN ===== */
+  // This function is called by Google after successful sign-in.
+  window.handleGoogleCredential = function(response){
+    try {
+      const payload = parseJwt(response.credential);
+      // payload contains: name, email, picture, sub (google user id)
+      state.me.name = (payload.name || payload.email.split('@')[0]).slice(0, 14);
+      state.me.pic = payload.picture || '';
+      state.me.googleId = payload.sub;
+      // persist locally
+      try {
+        localStorage.setItem('taprace_user', JSON.stringify({
+          name: state.me.name, pic: state.me.pic, gid: state.me.googleId
+        }));
+      } catch(e){}
+      // update UI
+      userPic.src = state.me.pic;
+      userName.textContent = state.me.name;
+      userChip.style.display = 'flex';
+      googleArea.style.display = 'none';
+      guestNote.style.display = 'none';
+      toast('Signed in as ' + state.me.name, 'ok');
+    } catch(e){
+      console.error(e);
+      toast('Sign-in failed', 'err');
+    }
+  };
+
+  // decode a JWT payload (client-side, for display only)
+  function parseJwt(token){
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const json = decodeURIComponent(atob(base64).split('').map(c =>
+      '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+    ).join(''));
+    return JSON.parse(json);
   }
 
-  /* ===== PLAYERS RENDER ===== */
+  /* ===== restore stored google user on load ===== */
+  try {
+    const stored = JSON.parse(localStorage.getItem('taprace_user') || 'null');
+    if (stored && stored.name){
+      state.me.name = stored.name;
+      state.me.pic = stored.pic || '';
+      state.me.googleId = stored.gid;
+      userPic.src = state.me.pic || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="%237c5cff"/></svg>';
+      userName.textContent = state.me.name;
+      userChip.style.display = 'flex';
+      googleArea.style.display = 'none';
+      guestNote.style.display = 'none';
+    }
+  } catch(e){}
+
+  /* ===== skip google, play as guest ===== */
+  $('guestSkip').onclick = () => {
+    googleArea.style.display = 'none';
+    guestNote.style.display = 'none';
+    toast('Playing as guest', 'info');
+    // pre-fill name if not set
+    if (!state.me.name) {
+      state.me.name = 'Guest' + Math.floor(Math.random()*9000 + 1000);
+    }
+  };
+
+  /* ===== render players ===== */
   function renderPlayers(){
     playersEl.innerHTML = '';
     const list = Object.values(state.players);
     list.forEach(p => {
       const chip = document.createElement('div');
       chip.className = 'player-chip' + (p.id === state.me.id ? ' me' : '');
-      chip.innerHTML = `
-        <div class="av">${(p.name[0] || '?').toUpperCase()}</div>
-        <span>${escapeHtml(p.name)}</span>
-        <span class="pts">${p.taps}</span>
-      `;
+      const av = p.pic
+        ? `<img src="${escapeHtml(p.pic)}" alt="">`
+        : (p.name[0] || '?').toUpperCase();
+      chip.innerHTML = `<div class="av">${av}</div><span>${escapeHtml(p.name)}</span><span class="pts">${p.taps||0}</span>`;
       playersEl.appendChild(chip);
     });
     chatCount.textContent = list.length + ' online';
   }
 
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
-
-  /* ===== CHAT ===== */
   function addChat(from, text, mine){
     const div = document.createElement('div');
     div.className = 'msg' + (mine ? ' me' : '');
@@ -581,7 +379,6 @@
     chatBody.appendChild(div);
     chatBody.scrollTop = chatBody.scrollHeight;
   }
-
   function sendChat(){
     const text = chatInput.value.trim();
     if (!text) return;
@@ -590,7 +387,6 @@
     broadcast({ t:'chat', name: state.me.name, text });
   }
 
-  /* ===== NETWORK ===== */
   function broadcast(msg){
     if (state.isHost){
       Object.values(state.connections).forEach(c => { try{ c.send(msg); }catch(e){} });
@@ -599,35 +395,130 @@
       if (c) { try{ c.send(msg); }catch(e){} }
     }
   }
-
   function sendTo(peerId, msg){
     const c = state.connections[peerId];
     if (c) { try{ c.send(msg); }catch(e){} }
   }
 
-  function handleMessage(data, fromConn){
+  /* ===== stage render (simplified tap game) ===== */
+  function renderStage(){
+    stage.innerHTML = '';
+    const timer = document.createElement('div');
+    timer.className = 'stage-timer'; timer.id = 'timer';
+    timer.textContent = state.gameState === 'playing' ? state.roundTimeLeft : (state.gameState === 'ended' ? '0' : '15');
+    stage.appendChild(timer);
+
+    const lbl = document.createElement('div');
+    lbl.className = 'stage-label'; lbl.id = 'stageLabel';
+    lbl.textContent = state.gameState === 'idle' ? 'TAP WHEN READY' : (state.gameState === 'playing' ? 'TAP NOW' : 'ROUND OVER');
+    stage.appendChild(lbl);
+
+    const tap = document.createElement('button');
+    tap.className = 'tap-btn'; tap.id = 'tapBtn';
+    tap.type = 'button';
+    tap.disabled = state.gameState !== 'playing';
+    tap.innerHTML = `<div class="count" id="tapCount">${state.me.taps||0}</div><div class="lbl">TAP</div>`;
+    tap.onclick = onTap;
+    stage.appendChild(tap);
+
+    const actions = document.createElement('div');
+    actions.className = 'stage-actions'; actions.id = 'stageActions';
+    stage.appendChild(actions);
+
+    if (state.isHost && (state.gameState === 'idle' || state.gameState === 'ended')){
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn btn-primary';
+      btn.textContent = state.gameState === 'ended' ? 'Play Again' : 'Start Round';
+      btn.onclick = startTapRound;
+      actions.appendChild(btn);
+    }
+  }
+
+  function startTapRound(){
+    if (!state.isHost) return;
+    Object.keys(state.players).forEach(id => state.players[id].taps = 0);
+    state.me.taps = 0;
+    state.gameState = 'playing';
+    state.roundTimeLeft = 15;
+    broadcast({ t:'tap-start', players: state.players });
+    renderPlayers();
+    renderStage();
+    runTapCountdown();
+  }
+
+  function runTapCountdown(){
+    let cd = 3;
+    const el = $('timer');
+    const lbl = $('stageLabel');
+    const btn = $('tapBtn');
+    if (lbl) lbl.textContent = 'GET READY';
+    if (btn) btn.disabled = true;
+    if (el) el.textContent = cd;
+    const iv = setInterval(() => {
+      cd--;
+      if (el) el.textContent = cd;
+      if (cd <= 0){
+        clearInterval(iv);
+        if (lbl) lbl.textContent = 'TAP NOW';
+        if (btn) btn.disabled = false;
+        runTapTimer();
+      }
+    }, 1000);
+  }
+
+  function runTapTimer(){
+    clearInterval(state.roundTimer);
+    state.roundTimer = setInterval(() => {
+      state.roundTimeLeft--;
+      const el = $('timer');
+      if (el){
+        el.textContent = state.roundTimeLeft;
+        if (state.roundTimeLeft <= 5) el.classList.add('warn');
+      }
+      if (state.roundTimeLeft <= 0) finishTapRound();
+    }, 1000);
+  }
+
+  function finishTapRound(){
+    clearInterval(state.roundTimer);
+    state.gameState = 'ended';
+    const btn = $('tapBtn');
+    if (btn) btn.disabled = true;
+    const list = Object.values(state.players);
+    let top = null;
+    list.forEach(p => { if (!top || (p.taps||0) > (top.taps||0)) top = p; });
+    const winner = top ? top.name.toUpperCase() + ' WINS' : 'DRAW';
+    const lbl = $('stageLabel');
+    if (lbl) lbl.textContent = winner;
+    if (state.isHost) broadcast({ t:'tap-end', players: state.players, winner });
+    renderStage();
+  }
+
+  function onTap(){
+    if (state.gameState !== 'playing') return;
+    state.me.taps++;
+    state.players[state.me.id].taps = state.me.taps;
+    const c = $('tapCount'); if (c) c.textContent = state.me.taps;
+    const b = $('tapBtn');
+    if (b){ b.classList.add('tap'); setTimeout(()=>b.classList.remove('tap'), 80); }
+    broadcast({ t:'tap', id: state.me.id, taps: state.me.taps });
+  }
+
+  function handleMessage(data){
     if (!data || !data.t) return;
     switch(data.t){
       case 'hello':
-        // host learns a new client's name/id
-        state.players[data.id] = { id: data.id, name: data.name, taps: 0 };
+        state.players[data.id] = { id: data.id, name: data.name, taps: 0, pic: data.pic };
         if (state.isHost){
-          // send back the roster + game state
           sendTo(data.id, {
-            t:'welcome',
-            roomCode: state.roomCode,
-            hostId: state.hostId,
-            you: data.id,
-            players: state.players,
-            gameState: state.gameState,
-            timeLeft: state.gameState === 'playing' ? state.roundTimeLeft : 15
+            t:'welcome', roomCode: state.roomCode, hostId: state.hostId, you: data.id,
+            players: state.players, gameState: state.gameState, timeLeft: state.roundTimeLeft
           });
-          // tell everyone else
           broadcast({ t:'players', players: state.players });
           renderPlayers();
         }
         break;
-
       case 'welcome':
         state.me.id = data.you;
         state.hostId = data.hostId;
@@ -638,122 +529,92 @@
         roomCodeEl.textContent = state.roomCode;
         topBar.style.display = 'flex';
         renderPlayers();
-        applyGameState();
+        renderStage();
         addSystem('Connected to room ' + state.roomCode);
-        toast('Joined room ' + state.roomCode, 'ok');
+        toast('Joined ' + state.roomCode, 'ok');
         break;
-
       case 'players':
         state.players = data.players || {};
         renderPlayers();
         break;
-
       case 'chat':
         addChat(data.name, data.text, false);
         break;
-
-      case 'start':
-        state.gameState = 'playing';
-        state.roundTimeLeft = data.duration;
+      case 'tap-start':
         state.players = data.players;
-        Object.keys(state.players).forEach(id => state.players[id].taps = 0);
+        state.me.taps = 0;
+        state.gameState = 'playing';
+        state.roundTimeLeft = 15;
         renderPlayers();
-        startRound();
+        renderStage();
+        runTapCountdown();
         break;
-
-      case 'taps':
+      case 'tap':
         if (state.players[data.id]) state.players[data.id].taps = data.taps;
         renderPlayers();
         break;
-
-      case 'end':
+      case 'tap-end':
+        state.players = data.players;
         state.gameState = 'ended';
-        state.players = data.players;
         renderPlayers();
-        endRound(data.winner);
-        break;
-
-      case 'reset':
-        state.gameState = 'idle';
-        state.players = data.players;
-        renderPlayers();
-        resetUI();
+        renderStage();
         break;
     }
   }
 
-  /* ===== PEER: CREATE ROOM ===== */
   function createRoom(){
     const code = makeCode();
     state.roomCode = code;
     state.isHost = true;
-
     const peer = new Peer('taprace-' + code, { debug: 1 });
     state.peer = peer;
 
     peer.on('open', id => {
       state.hostId = id;
       state.me.id = id;
-      state.me.name = getStoredName() || 'Host';
-      state.players[state.me.id] = { id: state.me.id, name: state.me.name, taps: 0 };
+      if (!state.me.name) state.me.name = 'Host';
+      state.players[state.me.id] = { id: state.me.id, name: state.me.name, taps: 0, pic: state.me.pic };
       roomCodeEl.textContent = code;
       topBar.style.display = 'flex';
       renderPlayers();
+      renderStage();
       show('game');
       toast('Room ' + code + ' created', 'ok');
-      addSystem('You are the host. Share the code: ' + code);
+      addSystem('You are the host. Share: ' + code);
     });
 
     peer.on('connection', conn => {
-      conn.on('open', () => {
-        state.connections[conn.peer] = conn;
-      });
+      conn.on('open', () => { state.connections[conn.peer] = conn; });
       conn.on('data', data => {
         if (data && data.t === 'hello'){
-          state.players[data.id] = { id: data.id, name: data.name, taps: 0 };
+          state.players[data.id] = { id: data.id, name: data.name, taps: 0, pic: data.pic };
           conn.send({
-            t:'welcome',
-            roomCode: state.roomCode,
-            hostId: state.hostId,
-            you: data.id,
-            players: state.players,
-            gameState: state.gameState,
-            timeLeft: state.roundTimeLeft
+            t:'welcome', roomCode: state.roomCode, hostId: state.hostId, you: data.id,
+            players: state.players, gameState: state.gameState, timeLeft: state.roundTimeLeft
           });
           broadcast({ t:'players', players: state.players });
           renderPlayers();
           addSystem(data.name + ' joined');
         } else {
-          handleMessage(data, conn);
-          if (data && data.t !== 'hello'){
-            // host relays to everyone else
-            Object.values(state.connections).forEach(c => {
-              if (c !== conn) { try{ c.send(data); }catch(e){} }
-            });
-          }
+          handleMessage(data);
+          Object.values(state.connections).forEach(c => {
+            if (c !== conn){ try{ c.send(data); }catch(e){} }
+          });
         }
       });
-      conn.on('close', () => {
-        // remove on disconnect
-        for (const id in state.players){
-          // we can't map conn.peer to a player id directly; try to find one that's gone
-        }
-        delete state.connections[conn.peer];
-      });
+      conn.on('close', () => { delete state.connections[conn.peer]; });
     });
 
     peer.on('error', err => {
       console.error(err);
-      toast('Connection error: ' + err.type, 'err');
+      toast('Error: ' + err.type, 'err');
     });
   }
 
-  /* ===== PEER: JOIN ROOM ===== */
   function joinRoom(code){
     state.roomCode = code;
     state.isHost = false;
-    state.me.name = getStoredName() || 'Guest';
-
+    if (!state.me.name) state.me.name = 'Guest';
     const peer = new Peer(uid('c'), { debug: 1 });
     state.peer = peer;
 
@@ -761,175 +622,32 @@
       state.me.id = id;
       const conn = peer.connect('taprace-' + code, { reliable: true });
       state.connections[conn.peer] = conn;
-
       conn.on('open', () => {
-        conn.send({ t:'hello', id: state.me.id, name: state.me.name });
+        conn.send({ t:'hello', id: state.me.id, name: state.me.name, pic: state.me.pic });
         topBar.style.display = 'flex';
         show('game');
-        addSystem('Connecting to room ' + code + '...');
+        addSystem('Connecting...');
       });
-
-      conn.on('data', data => handleMessage(data, conn));
-
-      conn.on('error', err => {
-        toast('Connection failed', 'err');
-      });
-
-      conn.on('close', () => {
-        addSystem('Host disconnected');
-        toast('Host disconnected', 'err');
-      });
+      conn.on('data', data => handleMessage(data));
+      conn.on('close', () => { addSystem('Host disconnected'); toast('Host disconnected', 'err'); });
     });
 
     peer.on('error', err => {
       console.error(err);
       if (err.type === 'peer-unavailable'){
         toast('Room not found', 'err');
-        setTimeout(() => { show('home'); }, 1200);
+        setTimeout(() => show('home'), 1200);
       } else {
         toast('Error: ' + err.type, 'err');
       }
     });
   }
 
-  /* ===== NAME ===== */
-  function getStoredName(){
-    try { return localStorage.getItem('taprace_name') || ''; } catch(e){ return ''; }
-  }
-  function setStoredName(n){
-    try { localStorage.setItem('taprace_name', n); } catch(e){}
-  }
+  function getStoredName(){ try { return localStorage.getItem('taprace_name') || ''; } catch(e){ return ''; } }
+  function setStoredName(n){ try { localStorage.setItem('taprace_name', n); } catch(e){} }
 
-  /* ===== GAME FLOW ===== */
-  function startRound(){
-    resetUI();
-    state.countdownTimeLeft = 3;
-    timerEl.textContent = state.countdownTimeLeft;
-    timerEl.classList.add('warn');
-    stageLabel.textContent = 'GET READY';
-    tapBtn.disabled = true;
-
-    const cd = setInterval(() => {
-      state.countdownTimeLeft--;
-      timerEl.textContent = state.countdownTimeLeft;
-      if (state.countdownTimeLeft <= 0){
-        clearInterval(cd);
-        timerEl.classList.remove('warn');
-        timerEl.textContent = state.roundTimeLeft;
-        stageLabel.textContent = 'TAP NOW';
-        tapBtn.disabled = false;
-        tapLbl.textContent = 'TAP';
-        state.roundTimer = setInterval(() => {
-          state.roundTimeLeft--;
-          timerEl.textContent = state.roundTimeLeft;
-          if (state.roundTimeLeft <= 5) timerEl.classList.add('warn');
-          if (state.roundTimeLeft <= 0) finishRound();
-        }, 1000);
-      }
-    }, 1000);
-  }
-
-  function finishRound(){
-    clearInterval(state.roundTimer);
-    state.gameState = 'ended';
-    tapBtn.disabled = true;
-    // find winner
-    const list = Object.values(state.players);
-    let winner = null;
-    list.forEach(p => {
-      if (!winner || p.taps > winner.taps) winner = p;
-    });
-    if (state.isHost){
-      broadcast({ t:'end', players: state.players, winner: winner ? winner.id : null });
-      endRound(winner ? winner.id : null);
-    }
-  }
-
-  function endRound(winnerId){
-    state.gameState = 'ended';
-    tapBtn.disabled = true;
-    timerEl.textContent = '0';
-    timerEl.classList.add('warn');
-    const w = winnerId ? state.players[winnerId] : null;
-    stageLabel.textContent = w ? (w.name + ' WINS!') : 'DRAW';
-    stageActions.innerHTML = '';
-    if (state.isHost){
-      const btn = document.createElement('button');
-      btn.className = 'btn btn-primary';
-      btn.textContent = 'Play Again';
-      btn.onclick = () => {
-        Object.keys(state.players).forEach(id => state.players[id].taps = 0);
-        renderPlayers();
-        state.gameState = 'playing';
-        state.roundTimeLeft = 15;
-        broadcast({ t:'start', duration: 15, players: state.players });
-        startRound();
-      };
-      stageActions.appendChild(btn);
-    } else {
-      stageActions.innerHTML = '<div style="color:var(--sub); font-size:12px; letter-spacing:2px;">waiting for host...</div>';
-    }
-  }
-
-  function resetUI(){
-    timerEl.textContent = 15;
-    timerEl.classList.remove('warn');
-    stageLabel.textContent = 'TAP WHEN READY';
-    tapBtn.disabled = true;
-    tapCountEl.textContent = '0';
-    stageActions.innerHTML = '';
-  }
-
-  function applyGameState(){
-    if (state.gameState === 'playing'){
-      startRound();
-    } else if (state.gameState === 'ended'){
-      endRound(null);
-    } else {
-      resetUI();
-    }
-  }
-
-  /* ===== TAP ===== */
-  tapBtn.addEventListener('click', () => {
-    if (tapBtn.disabled) return;
-    state.me.taps++;
-    state.players[state.me.id].taps = state.me.taps;
-    tapCountEl.textContent = state.me.taps;
-    tapBtn.classList.add('tap');
-    setTimeout(() => tapBtn.classList.remove('tap'), 80);
-    broadcast({ t:'taps', id: state.me.id, taps: state.me.taps });
-  });
-
-  /* ===== UI EVENTS ===== */
-  $('createBtn').onclick = () => {
-    const name = getStoredName();
-    if (!name){
-      show('name');
-      state.pendingAction = 'create';
-      return;
-    }
-    createRoom();
-  };
-
-  $('joinBtn').onclick = () => {
-    const code = ($('joinInput').value || '').trim().toUpperCase();
-    if (code.length !== 4){ toast('Enter a 4-letter code', 'err'); return; }
-    const name = getStoredName();
-    if (!name){
-      state.pendingAction = 'join';
-      state.pendingCode = code;
-      show('name');
-      return;
-    }
-    joinRoom(code);
-  };
-
-  $('joinInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') $('joinBtn').click();
-  });
-
-  $('nameConfirm').onclick = () => {
+  /* ===== name screen confirm ===== */
+  window.__confirmName = function(){
     const name = ($('nameInput').value || '').trim().slice(0, 14);
     if (!name){ toast('Enter a name', 'err'); return; }
     setStoredName(name);
@@ -938,33 +656,32 @@
     else if (state.pendingAction === 'join') joinRoom(state.pendingCode);
     state.pendingAction = null;
   };
-  $('nameInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') $('nameConfirm').click();
-  });
+  $('nameConfirm').addEventListener('click', window.__confirmName, false);
+  $('nameInput').addEventListener('keydown', e => { if (e.key === 'Enter') window.__confirmName(); });
 
-  roomCodeEl.parentElement.onclick = () => {
-    const code = state.roomCode;
-    if (!code) return;
-    if (navigator.clipboard){
-      navigator.clipboard.writeText(code).then(() => toast('Room code copied', 'ok'));
-    } else {
-      toast('Room code: ' + code, 'info');
-    }
+  /* ===== buttons ===== */
+  $('createBtn').onclick = () => {
+    if (!state.me.name){ state.pendingAction = 'create'; show('name'); return; }
+    createRoom();
   };
-
+  $('joinBtn').onclick = () => {
+    const code = ($('joinInput').value || '').trim().toUpperCase();
+    if (code.length !== 4){ toast('Enter a 4-letter code', 'err'); return; }
+    if (!state.me.name){ state.pendingAction = 'join'; state.pendingCode = code; show('name'); return; }
+    joinRoom(code);
+  };
+  $('joinInput').addEventListener('keydown', e => { if (e.key === 'Enter') $('joinBtn').click(); });
+  roomCodeEl.parentElement.onclick = () => {
+    if (!state.roomCode) return;
+    if (navigator.clipboard){ navigator.clipboard.writeText(state.roomCode).then(() => toast('Code copied', 'ok')); }
+    else toast('Code: ' + state.roomCode, 'info');
+  };
   chatSend.onclick = sendChat;
   chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendChat(); });
 
-  /* ===== INIT ===== */
-  // pre-fill name field
-  const stored = getStoredName();
-  if (stored) $('nameInput').value = stored;
-
-  // pre-fill room code from URL ?r=CODE
-  const urlParams = new URLSearchParams(location.search);
-  const r = urlParams.get('r');
+  /* init */
+  const r = new URLSearchParams(location.search).get('r');
   if (r) $('joinInput').value = r.toUpperCase().slice(0,4);
-
 })();
 </script>
 
