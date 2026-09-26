@@ -52,7 +52,6 @@
   .google-divider::before, .google-divider::after { content:""; flex:1; height:1px; background:var(--line); }
 
   .guest-note { font-size:11px; color:var(--sub); margin-top:6px; letter-spacing:.3px; max-width:320px; text-align:center; line-height:1.5; }
-  .guest-note a { color:var(--accent); text-decoration:none; cursor:pointer; }
 
   .game-view { flex:1; display:flex; flex-direction:column; }
   .players { display:flex; gap:8px; flex-wrap:wrap; padding:10px 0; margin-bottom:8px; }
@@ -142,7 +141,7 @@
   <div class="view active" id="view-home">
     <div class="home">
       <h1>TAP RACE</h1>
-      <div class="sub">Live multiplayer tap battle. Sign in with Google, create a room, share the code, play.</div>
+      <div class="sub">Live multiplayer tap battle. Sign in with Google, pick a name, create a room, play.</div>
 
       <div class="google-area" id="googleArea">
         <div id="g_id_onload"
@@ -157,7 +156,7 @@
              data-type="standard"
              data-shape="pill"
              data-theme="filled_black"
-             data-text="signin_with"
+             data-text="continue_with"
              data-size="large"
              data-logo_alignment="left"
              data-width="320">
@@ -165,11 +164,10 @@
       </div>
 
       <div class="guest-note" id="guestNote">
-        Google sign-in keeps your name & avatar across visits.
-        <a id="guestSkip">Skip · play as guest</a>
+        Sign in with Google to set your name and avatar.
       </div>
 
-      <div class="google-divider">OR</div>
+      <div class="google-divider">OR JOIN WITH CODE</div>
 
       <div class="join-row">
         <input type="text" id="joinInput" maxlength="4" placeholder="CODE" autocomplete="off">
@@ -222,7 +220,10 @@
     roomCode: '', peer: null,
     connections: {},
     gameState: 'idle',
-    roundTimer: null, roundTimeLeft: 15
+    roundTimer: null, roundTimeLeft: 15,
+    pendingAction: null,
+    pendingCode: null,
+    pendingGoogleName: null
   };
 
   const $ = id => document.getElementById(id);
@@ -263,24 +264,21 @@
   function uid(p){ return (p||'p') + '_' + Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4); }
   function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-  /* ===== GOOGLE SIGN-IN CALLBACK ===== */
+  /* ===== GOOGLE SIGN-IN ===== */
   window.handleGoogleCredential = function(response){
     try {
       const payload = parseJwt(response.credential);
-      state.me.name = (payload.name || payload.email.split('@')[0]).slice(0, 14);
+      const googleName = (payload.name || payload.email.split('@')[0]).slice(0, 14);
       state.me.pic = payload.picture || '';
       state.me.googleId = payload.sub;
-      try {
-        localStorage.setItem('taprace_user', JSON.stringify({
-          name: state.me.name, pic: state.me.pic, gid: state.me.googleId
-        }));
-      } catch(e){}
-      userPic.src = state.me.pic;
-      userName.textContent = state.me.name;
-      userChip.style.display = 'flex';
-      googleArea.style.display = 'none';
-      guestNote.style.display = 'none';
-      toast('Signed in as ' + state.me.name, 'ok');
+      state.pendingGoogleName = googleName;
+
+      // Show the name screen, pre-filled with their Google name
+      show('name');
+      const input = $('nameInput');
+      input.value = googleName;
+      setTimeout(() => input.focus(), 150);
+      toast('Google connected · choose your name', 'ok');
     } catch(e){
       console.error(e);
       toast('Sign-in failed', 'err');
@@ -307,17 +305,9 @@
       userName.textContent = state.me.name;
       userChip.style.display = 'flex';
       googleArea.style.display = 'none';
-      guestNote.style.display = 'none';
+      guestNote.textContent = 'Signed in as ' + state.me.name;
     }
   } catch(e){}
-
-  /* ===== skip google ===== */
-  $('guestSkip').onclick = () => {
-    googleArea.style.display = 'none';
-    guestNote.style.display = 'none';
-    toast('Playing as guest', 'info');
-    if (!state.me.name) state.me.name = 'Guest' + Math.floor(Math.random()*9000 + 1000);
-  };
 
   function renderPlayers(){
     playersEl.innerHTML = '';
@@ -540,7 +530,6 @@
     peer.on('open', id => {
       state.hostId = id;
       state.me.id = id;
-      if (!state.me.name) state.me.name = 'Host';
       state.players[state.me.id] = { id: state.me.id, name: state.me.name, taps: 0, pic: state.me.pic };
       roomCodeEl.textContent = code;
       topBar.style.display = 'flex';
@@ -582,7 +571,10 @@
   function joinRoom(code){
     state.roomCode = code;
     state.isHost = false;
-    if (!state.me.name) state.me.name = 'Guest';
+
+    addSystem('Connecting to ' + code + '...');
+    toast('Looking for room ' + code, 'info');
+
     const peer = new Peer(uid('c'), { debug: 1 });
     state.peer = peer;
 
@@ -590,23 +582,38 @@
       state.me.id = id;
       const conn = peer.connect('taprace-' + code, { reliable: true });
       state.connections[conn.peer] = conn;
+
       conn.on('open', () => {
         conn.send({ t:'hello', id: state.me.id, name: state.me.name, pic: state.me.pic });
         topBar.style.display = 'flex';
         show('game');
-        addSystem('Connecting...');
+        addSystem('Connection open · waiting for host');
       });
+
       conn.on('data', data => handleMessage(data));
-      conn.on('close', () => { addSystem('Host disconnected'); toast('Host disconnected', 'err'); });
+
+      conn.on('close', () => {
+        addSystem('Host disconnected');
+        toast('Host disconnected', 'err');
+      });
+
+      setTimeout(() => {
+        if (!state.players[state.me.id]){
+          toast('Room didn\'t respond — check code', 'err');
+          addSystem('No response from room. Code correct? Host still open?');
+        }
+      }, 8000);
     });
 
     peer.on('error', err => {
       console.error(err);
       if (err.type === 'peer-unavailable'){
-        toast('Room not found', 'err');
-        setTimeout(() => show('home'), 1200);
+        toast('Room not found — check code', 'err');
+        addSystem('Room ' + code + ' doesn\'t exist. Host may have closed it.');
+        setTimeout(() => show('home'), 1500);
       } else {
         toast('Error: ' + err.type, 'err');
+        addSystem('Peer error: ' + err.type);
       }
     });
   }
@@ -614,29 +621,76 @@
   function getStoredName(){ try { return localStorage.getItem('taprace_name') || ''; } catch(e){ return ''; } }
   function setStoredName(n){ try { localStorage.setItem('taprace_name', n); } catch(e){} }
 
+  /* ===== name confirm ===== */
   window.__confirmName = function(){
     const name = ($('nameInput').value || '').trim().slice(0, 14);
     if (!name){ toast('Enter a name', 'err'); return; }
     setStoredName(name);
     state.me.name = name;
-    if (state.pendingAction === 'create') createRoom();
-    else if (state.pendingAction === 'join') joinRoom(state.pendingCode);
-    state.pendingAction = null;
+
+    // if google signed in, persist pic + gid + name
+    if (state.me.googleId){
+      try {
+        localStorage.setItem('taprace_user', JSON.stringify({
+          name: state.me.name,
+          pic: state.me.pic,
+          gid: state.me.googleId
+        }));
+      } catch(e){}
+      userPic.src = state.me.pic || '';
+      userName.textContent = state.me.name;
+      userChip.style.display = 'flex';
+      googleArea.style.display = 'none';
+      guestNote.textContent = 'Signed in as ' + state.me.name;
+    }
+
+    // return to home and continue pending action
+    show('home');
+
+    if (state.pendingAction === 'create'){
+      state.pendingAction = null;
+      createRoom();
+    } else if (state.pendingAction === 'join'){
+      const code = state.pendingCode;
+      state.pendingAction = null;
+      state.pendingCode = null;
+      joinRoom(code);
+    } else {
+      toast('Name set · ready to play', 'ok');
+    }
   };
   $('nameConfirm').addEventListener('click', window.__confirmName, false);
   $('nameInput').addEventListener('keydown', e => { if (e.key === 'Enter') window.__confirmName(); });
 
+  /* ===== buttons ===== */
   $('createBtn').onclick = () => {
-    if (!state.me.name){ state.pendingAction = 'create'; show('name'); return; }
+    if (!state.me.name){
+      state.pendingAction = 'create';
+      show('name');
+      // pre-fill with whatever we might have
+      if (state.pendingGoogleName) $('nameInput').value = state.pendingGoogleName;
+      setTimeout(() => $('nameInput').focus(), 150);
+      return;
+    }
     createRoom();
   };
+
   $('joinBtn').onclick = () => {
     const code = ($('joinInput').value || '').trim().toUpperCase();
     if (code.length !== 4){ toast('Enter a 4-letter code', 'err'); return; }
-    if (!state.me.name){ state.pendingAction = 'join'; state.pendingCode = code; show('name'); return; }
+    if (!state.me.name){
+      state.pendingAction = 'join';
+      state.pendingCode = code;
+      show('name');
+      if (state.pendingGoogleName) $('nameInput').value = state.pendingGoogleName;
+      setTimeout(() => $('nameInput').focus(), 150);
+      return;
+    }
     joinRoom(code);
   };
+
   $('joinInput').addEventListener('keydown', e => { if (e.key === 'Enter') $('joinBtn').click(); });
+
   roomCodeEl.parentElement.onclick = () => {
     if (!state.roomCode) return;
     if (navigator.clipboard){ navigator.clipboard.writeText(state.roomCode).then(() => toast('Code copied', 'ok')); }
@@ -645,6 +699,7 @@
   chatSend.onclick = sendChat;
   chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendChat(); });
 
+  /* ===== URL room code auto-fill ===== */
   const r = new URLSearchParams(location.search).get('r');
   if (r) $('joinInput').value = r.toUpperCase().slice(0,4);
 })();
